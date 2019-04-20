@@ -1,4 +1,3 @@
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -11,14 +10,16 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.*;
 
 public class Hamming extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_1;
@@ -146,36 +147,39 @@ public class Hamming extends JFrame {
 				char[] result=new char[m];
 				for(int j=0;j<r;j++) pbit[j]='0';
 				for(int j=0,bflags=0,pflags=0,twoflags=0;j<m;j++){
-					if(j==Math.pow(2, twoflags++)-1) {
+					if(j==Math.pow(2, twoflags)-1) {
 						result[j]=pbit[pflags++];
+						twoflags++;
 					}else {
 						result[j]=bbit[bflags++];
 					}
 				};
-				for(int j=1;j<r;j++) {
-					int count=(new Double(Math.pow(2, j-1))).intValue();
+				for(int j=0;j<r;j++) {
+					int count=(int)Math.pow(2,j);
 					int temp=0;
 					for(int flags=count-1,num=0,state=1;flags<m;flags++) {
 						if(state==1){
 							int temp1=result[flags]-'0';
 							temp=temp^temp1;
-							
 						}
 						num++;
 						if(num==count) {
 							if(state==0) {
 								state=1;
+								num=0;
 							}else {
 								state=0;
+								num=0;
 							}
 						}
 						
 					}
-					pbit[r-1]=(char)(temp+48);
+					pbit[j]=(char)(temp+48);
 				}
 				for(int j=0,bflags=0,pflags=0,twoflags=0;j<m;j++){
-					if(j==Math.pow(2, twoflags++)-1) {
+					if(j==Math.pow(2, twoflags)-1) {
 						result[j]=pbit[pflags++];
+						twoflags++;
 					}else {
 						result[j]=bbit[bflags++];
 					}
@@ -191,6 +195,69 @@ public class Hamming extends JFrame {
 		JButton button_1 = new JButton("\u8BD1\u7801");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String input=textField_1.getText();
+				int m=input.length();
+				label_6.setText(String.valueOf(m)+"Î»");
+				int r=0;
+				while(Math.pow(2,r)<m+1) r++;
+				label_4.setText(String.valueOf(r));
+				int k;
+				k=m-r;
+				label_5.setText(String.valueOf(k)+"Î»");
+				char[] pbit=new char[r];
+				char[] bbit=new char[k];
+				char[] total=input.toCharArray();
+				for(int j=0;j<r;j++){
+					pbit[j]=total[(int)Math.pow(2, j)-1];
+				}
+				for(int j=0;j<r;j++) {
+					int count=(int)Math.pow(2,j);
+					int temp=0;
+					for(int flags=count-1,num=0,state=1;flags<m;flags++) {
+						if(state==1){
+							int temp1=total[flags]-'0';
+							temp=temp^temp1;
+						}
+						num++;
+						if(num==count) {
+							if(state==0) {
+								state=1;
+								num=0;
+							}else {
+								state=0;
+								num=0;
+							}
+						}
+						
+					}
+					pbit[j]=(char)(temp+48);
+				}
+				int errorstate=0,errorbit=0;
+				for(char x:pbit) {
+					if(x!='0') {
+						errorstate=1;
+					}
+				}
+				if(errorstate==1) {
+					for(int j=0;j<r;j++) {
+						int temp=pbit[j]-'0';
+						errorbit+=(int)Math.pow(2,j)*temp;
+					}
+					if(total[errorbit-1]=='0') {
+						total[errorbit-1]='1';
+					}else {
+						total[errorbit-1]='0';
+					}
+				}
+				for(int j=0,bflags=0,twoflags=0;j<m;j++) {
+					if(j!=(int)Math.pow(2,twoflags)-1) {
+						bbit[bflags++]=total[j];
+					}else {
+						twoflags++;
+					}
+				}			
+				String output=String.valueOf(bbit);
+				textField.setText(output);
 			}
 		});
 		button_1.setFont(new Font("ºÚÌå", Font.PLAIN, 18));
