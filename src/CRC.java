@@ -189,6 +189,7 @@ public class CRC extends JFrame {
 					for(int j=1;j<l;j++) {
 						value[j]=remainder[j];
 					}
+					if(tempInput.length()==0) break;
 				}while(Boolean.TRUE);
 				char[] behind=new char[l-1];
 				for(int j=0;j<l-1;j++) {
@@ -205,6 +206,57 @@ public class CRC extends JFrame {
 		JButton button_1 = new JButton("\u8BD1\u7801");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String input=textField_2.getText();
+				String poly=textField_1.getText().replaceAll("^(0+)", "");
+				if(input.isEmpty()||poly.isEmpty()) return;
+				String tempInput=input;
+				int l=poly.length();
+				char[] polya=poly.toCharArray();
+				int k=input.length()-l+1;
+				label_2.setText(String.valueOf(k)+"位");
+				char[] remainder=new char[l];
+				char[] array=tempInput.toCharArray();
+				while(array[0]=='0') {
+					tempInput=tempInput.substring(1);
+					array=tempInput.toCharArray();
+				}
+				char[] value=tempInput.substring(0,l).toCharArray();
+				tempInput=tempInput.substring(l);
+				do {
+					for(int j=1;j<l;j++) {
+						remainder[j-1]=(char)((int)(polya[j]-'0')^(int)(value[j]-'0')+48);
+					}
+					array=tempInput.toCharArray();
+					if(tempInput.length()==0) break;
+					tempInput=tempInput.substring(1);
+					remainder[l-1]=array[0];
+					while(remainder[0]=='0') {
+						for(int flags=0;flags<l-1;flags++) {
+							remainder[flags]=remainder[flags+1];
+						}
+						array=tempInput.toCharArray();
+						if(tempInput.length()==0) break;
+						tempInput=tempInput.substring(1);
+						remainder[l-1]=array[0];
+					}
+					for(int j=1;j<l;j++) {
+						value[j]=remainder[j];
+					}
+					if(tempInput.length()==0) break;
+				}while(Boolean.TRUE);
+				int errorstate=0;
+				for(int j=0;j<remainder.length;j++) {
+					if(remainder[j]=='1') {
+						errorstate=1;
+					}
+				}
+				String output="";
+				if(errorstate==0) {
+					output=input.substring(0,k);
+				}else if(errorstate==1){
+					output="数据出错！";
+				}
+				textField.setText(output);
 			}
 		});
 		button_1.setFont(new Font("黑体", Font.PLAIN, 20));
