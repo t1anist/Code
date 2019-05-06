@@ -48,7 +48,7 @@ public class CRC extends JFrame {
 	public CRC() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 593, 507);
+		setBounds(100, 100, 632, 516);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -162,6 +162,7 @@ public class CRC extends JFrame {
 					tempInput=tempInput+"0";
 				}
 				char[] remainder=new char[l];
+				tempInput=tempInput.replaceAll("^(0+)", "");
 				char[] array=tempInput.toCharArray();
 				while(array[0]=='0') {
 					tempInput=tempInput.substring(1);
@@ -189,7 +190,7 @@ public class CRC extends JFrame {
 					for(int j=1;j<l;j++) {
 						value[j]=remainder[j];
 					}
-					if(tempInput.length()==0) break;
+				//	if(tempInput.length()==0) break;
 				}while(Boolean.TRUE);
 				char[] behind=new char[l-1];
 				for(int j=0;j<l-1;j++) {
@@ -215,6 +216,7 @@ public class CRC extends JFrame {
 				int k=input.length()-l+1;
 				label_2.setText(String.valueOf(k)+"λ");
 				char[] remainder=new char[l];
+				tempInput=tempInput.replaceAll("^(0+)", "");
 				char[] array=tempInput.toCharArray();
 				while(array[0]=='0') {
 					tempInput=tempInput.substring(1);
@@ -226,8 +228,11 @@ public class CRC extends JFrame {
 					for(int j=1;j<l;j++) {
 						remainder[j-1]=(char)((int)(polya[j]-'0')^(int)(value[j]-'0')+48);
 					}
+					if(tempInput.length()==0) {
+						remainder[l-1]=(char)((int)(polya[l-1]-'0')^(int)(value[l-1]-'0')+48);
+						break;
+					}
 					array=tempInput.toCharArray();
-					if(tempInput.length()==0) break;
 					tempInput=tempInput.substring(1);
 					remainder[l-1]=array[0];
 					while(remainder[0]=='0') {
@@ -242,7 +247,7 @@ public class CRC extends JFrame {
 					for(int j=1;j<l;j++) {
 						value[j]=remainder[j];
 					}
-					if(tempInput.length()==0) break;
+					//if(tempInput.length()==0) break;
 				}while(Boolean.TRUE);
 				int errorstate=0;
 				for(int j=0;j<remainder.length;j++) {
